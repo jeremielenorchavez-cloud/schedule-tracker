@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Tracker - Share Your Schedule with Friends</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📅 Schedule Tracker</h1>
+                <p>Share and sync schedules with friends</p>
+            </div>
+            <div class="header-actions">
+                <button id="shareLinkBtn" class="btn btn-primary">Share Link</button>
+                <button id="settingsBtn" class="btn btn-secondary">Settings</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-view="daily">Daily</button>
+            <button class="tab-btn" data-view="weekly">Weekly</button>
+            <button class="tab-btn" data-view="monthly">Monthly</button>
+        </nav>
+
+        <!-- Date Navigation -->
+        <div class="date-navigation">
+            <button id="prevBtn" class="btn-nav">← Previous</button>
+            <input type="date" id="dateInput" class="date-input">
+            <button id="nextBtn" class="btn-nav">Next →</button>
+            <button id="todayBtn" class="btn btn-secondary">Today</button>
+        </div>
+
+        <!-- Friend List & Filters -->
+        <div class="sidebar">
+            <h3>Friends & Filters</h3>
+            <div id="friendList" class="friend-list">
+                <div class="friend-item">
+                    <input type="checkbox" id="friend-self" checked>
+                    <label for="friend-self" style="background-color: #4A90E2;">You</label>
+                </div>
+            </div>
+            <button id="addFriendBtn" class="btn btn-secondary">+ Add Friend</button>
+            
+            <h3 style="margin-top: 20px;">Event Categories</h3>
+            <div id="categoryFilter" class="category-filter">
+                <div class="category-item">
+                    <input type="checkbox" id="cat-work" checked>
+                    <label for="cat-work" style="background-color: #FF6B6B;">Work</label>
+                </div>
+                <div class="category-item">
+                    <input type="checkbox" id="cat-personal" checked>
+                    <label for="cat-personal" style="background-color: #4ECDC4;">Personal</label>
+                </div>
+                <div class="category-item">
+                    <input type="checkbox" id="cat-social" checked>
+                    <label for="cat-social" style="background-color: #FFE66D;">Social</label>
+                </div>
+                <div class="category-item">
+                    <input type="checkbox" id="cat-health" checked>
+                    <label for="cat-health" style="background-color: #95E1D3;">Health</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Daily View -->
+            <div id="dailyView" class="view active">
+                <div id="dailySchedule" class="schedule-container"></div>
+            </div>
+
+            <!-- Weekly View -->
+            <div id="weeklyView" class="view">
+                <div id="weeklySchedule" class="schedule-container"></div>
+            </div>
+
+            <!-- Monthly View -->
+            <div id="monthlyView" class="view">
+                <div id="monthlySchedule" class="schedule-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Add Event</h2>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title *</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Date *</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventStartTime">Start Time *</label>
+                        <input type="time" id="eventStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventEndTime">End Time *</label>
+                        <input type="time" id="eventEndTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Category *</label>
+                    <select id="eventCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="social">Social</option>
+                        <option value="health">Health</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventReminder">Reminder</label>
+                    <select id="eventReminder">
+                        <option value="none">No Reminder</option>
+                        <option value="15">15 minutes before</option>
+                        <option value="30">30 minutes before</option>
+                        <option value="60">1 hour before</option>
+                        <option value="1440">1 day before</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventColor">Color</label>
+                    <div class="color-picker">
+                        <input type="color" id="eventColor" value="#4A90E2">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Event</button>
+                    <button type="button" id="deleteEventBtn" class="btn btn-danger" style="display: none;">Delete Event</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeShareModal()">&times;</span>
+            <h2>Share Your Schedule</h2>
+            <div class="share-options">
+                <div class="share-option">
+                    <h3>Public Link</h3>
+                    <p>Anyone with this link can view your schedule:</p>
+                    <div class="link-container">
+                        <input type="text" id="shareLink" readonly class="share-input">
+                        <button class="btn btn-secondary" onclick="copyToClipboard()">Copy Link</button>
+                    </div>
+                </div>
+                <div class="share-option">
+                    <h3>Share with Friends</h3>
+                    <p>Enter your friend's email to invite them:</p>
+                    <div class="invite-container">
+                        <input type="email" id="friendEmail" placeholder="friend@example.com" class="share-input">
+                        <button class="btn btn-primary" onclick="inviteFriend()">Send Invite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSettingsModal()">&times;</span>
+            <h2>Settings</h2>
+            <div class="settings-form">
+                <div class="form-group">
+                    <label for="userName">Your Name</label>
+                    <input type="text" id="userName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Your Email</label>
+                    <input type="email" id="userEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableNotifications">
+                        Enable Notifications
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="timezone">Timezone</label>
+                    <select id="timezone">
+                        <option value="UTC">UTC</option>
+                        <option value="EST">Eastern Time</option>
+                        <option value="CST">Central Time</option>
+                        <option value="MST">Mountain Time</option>
+                        <option value="PST">Pacific Time</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    <button class="btn btn-secondary" onclick="closeSettingsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="app.js"></script>
+    <script src="storage.js"></script>
+    <script src="notifications.js"></script>
+</body>
+</html>
