@@ -1,0 +1,12 @@
+# GitHub Pages Configuration
+
+# This file enables GitHub Pages deployment
+# Settings > Pages > Source: Deploy from a branch (main)
+
+# No additional configuration needed!
+# GitHub automatically serves index.html as the root file
+
+# For custom domain:
+# 1. Go to Settings > Pages
+# 2. Under "Custom domain", enter your domain
+# 3. Follow the DNS configuration instructions
